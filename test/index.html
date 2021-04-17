@@ -1,0 +1,76 @@
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <style>
+  html {
+    font-family: arial;
+  }
+  </style>
+  <link rel="stylesheet" href="https://unpkg.com/xterm@3.6.0/dist/xterm.css" />
+</head>
+<body>
+
+<div style="width: 100%; height: calc(100% - 50px);" id="terminal"></div>
+
+<!-- xterm -->
+<script src="https://unpkg.com/xterm@3.6.0/dist/xterm.js"></script>
+<script src="https://unpkg.com/xterm@3.6.0/dist/addons/fit/fit.js"></script>
+<script src="https://unpkg.com/xterm@3.6.0/dist/addons/webLinks/webLinks.js"></script>
+<script src="https://unpkg.com/xterm@3.6.0/dist/addons/fullscreen/fullscreen.js"></script>
+<script src="https://unpkg.com/xterm@3.6.0/dist/addons/search/search.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.1.1/socket.io.js"></script>
+
+<script>
+  Terminal.applyAddon(fullscreen)
+  Terminal.applyAddon(fit)
+  Terminal.applyAddon(webLinks)
+  Terminal.applyAddon(search)
+  const term = new Terminal({
+        cursorBlink: true,
+        macOptionIsMeta: true,
+        scrollback: true,
+    });
+  term.open(document.getElementById('terminal'));
+  term.fit()
+  term.resize(15, 50)
+  console.log(`size: ${term.cols} columns, ${term.rows} rows`)
+  term.toggleFullScreen(true)
+  term.fit()
+  //term.write("Welcome to pyxterm.js!\n")
+  term.on('key', (key, ev) => {
+    console.log("pressed key", key)
+    console.log("event", ev)
+    socket.emit("pty-input", {"input": key})
+  });
+
+  const socket = io.connect('/pty');
+
+  socket.on("pty-output", function(data){
+    console.log("new output", data)
+    term.write(data.output)
+  })
+
+
+
+  function fitToscreen(){
+    term.fit()
+    socket.emit("resize", {"cols": term.cols, "rows": term.rows})
+  }
+
+  function debounce(func, wait_ms) {
+    let timeout
+    return function(...args) {
+      const context = this
+      clearTimeout(timeout)
+      timeout = setTimeout(() => func.apply(context, args), wait_ms)
+    }
+  }
+
+  const wait_ms = 50;
+  window.onresize = debounce(fitToscreen, wait_ms)
+
+
+</script>
+
+</body>
+</html>

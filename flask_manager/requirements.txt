@@ -1,0 +1,11 @@
+flask
+flask_sqlalchemy
+flask_wtf
+flask_login
+flask-script
+pyotp
+autils
+suds-py3
+flask-migrate
+tornado
+paramiko

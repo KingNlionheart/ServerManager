@@ -1,0 +1,10 @@
+click==7.1.2               # via flask
+Flask-SocketIO==4.3.0
+Flask==1.1.2            # via flask-socketio
+itsdangerous==1.1.0       # via flask
+Jinja2==2.11.2              # via flask
+MarkupSafe==1.1.1         # via jinja2
+python-engineio==3.12.1   # via python-socketio
+python-socketio==4.5.1    # via flask-socketio
+six==1.14.0               # via python-engineio, python-socketio
+Werkzeug==1.0.1          # via flask
